@@ -1314,6 +1314,7 @@ impl Vmm {
 
     fn start_microvm(&mut self) -> std::result::Result<VmmData, VmmActionError> {
         info!("VMM received instance start command");
+        eprintln!("[fc] VMM received instance start command");
         if self.is_instance_initialized() {
             return Err(VmmActionError::StartMicrovm(
                 ErrorKind::User,
@@ -1610,7 +1611,7 @@ impl Vmm {
                 std::fs::write(self.dump_dir.as_ref().unwrap(), snap_str)
                     .expect("Failed to write snapshot.json");
 
-                println!("Snapshot creation succeeds!");
+                eprintln!("Snapshot creation succeeds!");
 
                 self.stop(i32::from(FC_EXIT_CODE_OK));
             }
@@ -2054,6 +2055,8 @@ impl Vmm {
             }
         };
 
+        eprintln!("[fc] Action received: {:?}", request);
+
         match request {
             VmmAction::ConfigureBootSource(boot_source_body, sender) => {
                 Vmm::send_response(
@@ -2199,6 +2202,7 @@ pub fn start_vmm_thread(
             let mut vmm = Vmm::new(api_shared_info, api_event_fd, from_api, seccomp_level,
                                    second_serial, second_input, ready_notifier, notifier_id)
                 .expect("Cannot create VMM");
+            eprintln!("[fc] vmm created");
             match vmm.run_control() {
                 Ok(()) => {
                     info!("Gracefully terminated VMM control loop");

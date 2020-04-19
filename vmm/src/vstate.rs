@@ -541,6 +541,7 @@ impl Vcpu {
                      from_snapshot: bool,
                      ready_notifier: &Option<File>,
                      notifier_id: u32) -> Result<()> {
+        eprintln!("[fc] Start run_emulation");
         match self.fd.run() {
             Ok(run) => match run {
                 VcpuExit::IoIn(addr, data) => {
@@ -605,6 +606,7 @@ impl Vcpu {
                 }
                 VcpuExit::Shutdown => {
                     info!("Received KVM_EXIT_SHUTDOWN signal");
+                    eprintln!("[fc] Received a shutdown");
                     Err(Error::VcpuUnhandledKvmExit)
                 }
                 // Documentation specifies that below kvm exits are considered

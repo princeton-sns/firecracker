@@ -962,9 +962,13 @@ impl VcpuFd {
     ///
     pub fn run(&self) -> Result<VcpuExit> {
         // Safe because we know that our file is a VCPU fd and we verify the return result.
+        eprintln!("[fc] kvm/src/lib.rs run()");
         let ret = unsafe { ioctl(self, KVM_RUN()) };
+        eprintln!("[fc] kvm/src/lib.rs KVM_RUN: {}",ret);
         if ret == 0 {
             let run = self.kvm_run_ptr.as_mut_ref();
+            //eprintln!("[fc] run: {:?}", run);
+            eprintln!("[fc] run.exit_reason: {:?}", run.exit_reason);
             match run.exit_reason {
                 // make sure you treat all possible exit reasons from include/uapi/linux/kvm.h corresponding
                 // when upgrading to a different kernel version
